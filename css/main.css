@@ -24,6 +24,11 @@ body {
 }
 
 
+#logo{
+    margin-top: -10px ;
+    height: 45px;
+}
+
 #sidebar-tree{
   overflow-y: hidden;
   overflow-x: auto;
