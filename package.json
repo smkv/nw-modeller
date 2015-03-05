@@ -4,6 +4,17 @@
   "private": true,
   "main": "index.html",
   "scripts": {},
+  "window": {
+    "title": "Node Modeller",
+    "icon": "images/icon_64.png",
+    "toolbar": false,
+    "frame": true,
+    "width": 800,
+    "height": 600,
+    "position": "center",
+    "min_width": 400,
+    "min_height": 200
+  },
   "dependencies": {
   }
 }
