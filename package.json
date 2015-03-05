@@ -1,0 +1,9 @@
+{
+  "name": "nw-modeller",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.html",
+  "scripts": {},
+  "dependencies": {
+  }
+}
