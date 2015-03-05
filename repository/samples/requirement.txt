@@ -1,0 +1,3 @@
+[requirement] Business requirement
+
+This is a simple requirement description

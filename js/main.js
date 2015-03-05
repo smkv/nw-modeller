@@ -18,7 +18,7 @@ $(function() {
     var stat = fs.lstatSync(fullPath);
 
     var icon = 'fa fa-folder-open';
-    var name = path.substring(path.indexOf('/'));
+    var name = path.substring(path.lastIndexOf('/') + 1);
     var type = 'folder';
 
     if (stat.isFile()) {
@@ -35,6 +35,17 @@ $(function() {
         switch (type) {
           case 'document':
             icon = 'fa fa-file-text-o';
+            break; 
+          case 'component':
+            icon = 'fa fa-folder';
+            break;
+          
+          case 'requirement':
+            icon = 'fa fa-bolt';
+            break;
+          
+          case 'diagram':
+            icon = 'fa fa-picture-o';
             break;
         }
 
@@ -78,13 +89,18 @@ $(function() {
             var details = getFileItemDetails(id);
             var panel = $('#entry-panel');
             panel.find('.panel-heading').html('<i class="' + details.icon + '"></i> ' + details.name);
-            panel.find('.panel-footer').html(details.real_path);
-            
-            var data = fs.readFileSync(details.real_path);
-            var split = new String(data).split('\n');
-            var content = split.slice(1).join('<br />');
+            panel.find('.panel-footer').html('<small class="text-muted">' + details.real_path + '</small>');
 
-            panel.find('.panel-body').html(content);
+            if (!details.directory) {
+              var data = fs.readFileSync(details.real_path);
+              var split = new String(data).split('\n');
+              var content = split.slice(1).join('<br />');
+
+              panel.find('.panel-body').html(content);
+            }else{
+              panel.find('.panel-body').html('Package details will be here');
+              
+            }
           }
 
         });

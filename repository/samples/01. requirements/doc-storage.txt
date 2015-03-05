@@ -1,0 +1,4 @@
+[requirement] Storage type
+
+All documents should be stored in  a SVN (subversion) system
+

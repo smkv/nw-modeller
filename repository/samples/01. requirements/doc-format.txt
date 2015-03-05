@@ -1,0 +1,4 @@
+[requirement] Format of documents
+
+The format of all documents in an application must be text.
+

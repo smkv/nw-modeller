@@ -1,0 +1,4 @@
+[requirement] Versions
+
+All documents should be stored in  a SVN (subversion) system and able to compare between versions.
+

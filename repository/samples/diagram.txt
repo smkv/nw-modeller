@@ -1,0 +1,7 @@
+[diagram] UML diagram
+
+A small description of diagram.
+
+
+{diagram}
+[samples/component.txt]->([samples/a_document.txt])
