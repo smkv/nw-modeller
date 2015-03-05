@@ -90,20 +90,31 @@ $(function () {
                 panel.find('.panel-heading').html('<i class="' + details.icon + '"></i> ' + details.name);
                 panel.find('.panel-footer').html('<small class="text-muted">' + details.real_path + '</small>');
 
+                var content = '';
                 if (!details.directory) {
                     var data = fs.readFileSync(details.real_path);
                     var split = new String(data).split('\n');
-                    var content = split.slice(1).join('<br />');
-
-                    panel.find('.panel-body').html(content);
+                    content = split.slice(1).join('<br />');
                 } else {
-                    panel.find('.panel-body').html('Package details will be here');
+                    content = 'Package details will be here';
 
                 }
+
+                var withEditor = $('<div contenteditable="true"></div>').html(content);
+
+                panel.find('.panel-body').html(withEditor);
+                var editor = CKEDITOR.inline(panel.find('[contenteditable=true]').get(0));
+                editor.on('change', function (evt) {
+                    var content = evt.editor.getData();
+                    if (!details.directory) {
+                        console.log('save to '+ details.real_path);
+                        fs.writeFileSync(details.real_path, '[' + details.type + '] ' + details.name + '\n' + content);
+                    }
+                });
+
             }
 
         }).on('open_node.jstree close_node.jstree', function (e, data) {
-            console.log(data);
             if (data && data.node) {
                 var details = data.node.original.details;
                 if (details.directory) {
