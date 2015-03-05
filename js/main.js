@@ -25,10 +25,10 @@ $(function () {
             type = 'file';
             icon = 'fa fa-file-o';
             var data = fs.readFileSync(fullPath);
-            var firstLine = new String(data).split('\n', 1)[0];
+            var firstLine = String(data).split('\n', 1)[0];
             var regExp = /\[(\w+)]\s*(.+)\s*/;
             if (regExp.test(firstLine)) {
-                matches = regExp.exec(firstLine);
+                var matches = regExp.exec(firstLine);
                 type = matches[1];
                 name = matches[2];
 
@@ -47,6 +47,7 @@ $(function () {
                     case 'diagram':
                         icon = 'fa fa-picture-o';
                         break;
+                    default :
                 }
 
             }
@@ -92,22 +93,22 @@ $(function () {
 
                 var content = '';
                 if (!details.directory) {
-                    var data = fs.readFileSync(details.real_path);
-                    var split = new String(data).split('\n');
+                    var fileData = fs.readFileSync(details.real_path);
+                    var split = String(fileData).split('\n');
                     content = split.slice(1).join('<br />');
                 } else {
                     content = 'Package details will be here';
 
                 }
 
-                var withEditor = $('<div contenteditable="true"></div>').html(content);
+                var withEditor = $('<div class="container-fluid" contenteditable="true"></div>').html(content);
 
                 panel.find('.panel-body').html(withEditor);
                 var editor = CKEDITOR.inline(panel.find('[contenteditable=true]').get(0));
                 editor.on('change', function (evt) {
                     var content = evt.editor.getData();
                     if (!details.directory) {
-                        console.log('save to '+ details.real_path);
+                        console.log('save to ' + details.real_path);
                         fs.writeFileSync(details.real_path, '[' + details.type + '] ' + details.name + '\n' + content);
                     }
                 });
