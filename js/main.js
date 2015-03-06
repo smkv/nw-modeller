@@ -8,34 +8,33 @@ $(function() {
   $(document.body).on('modeller.entry.open', function(event, data) {
     var details = data.details;
     var panel = $('#entry-panel');
-    panel.find('.panel-heading').html('<i class="' + details.icon + '"></i> ' + details.name);
-    panel.find('.panel-footer').html('<small class="text-muted">' + details.real_path + '</small>');
+    var panelHeader = panel.find('.panel-heading');
+    var panelFooter = panel.find('.panel-footer');
+    var panelBody = panel.find('.panel-body');
 
-    var content = '';
+    panelHeader.html('<i class="' + details.icon + '"></i> ' + details.name);
+    panelFooter.html('<small class="text-muted">' + details.real_path + '</small>');
+
+    var content;
+    var fileData;
     if (!details.directory) {
-      var fileData = fs.readFileSync(details.real_path);
-      var split = String(fileData).split('\n');
-      content = split.slice(1).join('<br />');
+      fileData = fs.readFileSync(details.real_path);
+    }
+    else if (fs.existsSync(details.real_path + '/' + packageInfoFileName)) {
+      fileData = fs.readFileSync(details.real_path + '/' + packageInfoFileName);
     }
     else {
-      if (fs.existsSync(details.real_path + '/' + packageInfoFileName)) {
-        var fileData = fs.readFileSync(details.real_path + '/' + packageInfoFileName);
-        var split = String(fileData).split('\n');
-        content = split.slice(1).join('<br />');
-
-      }
-      else {
-        content = 'A package ' + details.name;
-      }
+      fileData = '[package] ' + details.name + '\n A package ' + details.name;
     }
 
-    var withEditor = $('<div class="container-fluid" contenteditable="true"></div>').html(content);
+    var split = split = String(fileData).split('\n');
+    content = split.slice(1).join('<br />');
 
-    panel.find('.panel-body').html(withEditor);
-    var editor = CKEDITOR.inline(panel.find('[contenteditable=true]').get(0));
-    editor.on('change', function(evt) {
-      $(document.body).trigger('modeller.entry.save', {details: details, content: evt.editor.getData()});
-    });
+    panelBody.html($('<div class="container-fluid" contenteditable="true"></div>').html(content));
+    CKEDITOR.inline(panel.find('[contenteditable=true]').get(0))
+      .on('change', function(evt) {
+            $(document.body).trigger('modeller.entry.save', {details: details, content: evt.editor.getData()});
+          });
 
   });
 
@@ -98,7 +97,7 @@ $(function() {
     }
     else {
       if (fs.existsSync(fullPath + '/' + packageInfoFileName)) {
-        var data = fs.readFileSync(fullPath+ '/' + packageInfoFileName);
+        var data = fs.readFileSync(fullPath + '/' + packageInfoFileName);
         var firstLine = String(data).split('\n', 1)[0];
         var regExp = /\[(\w+)]\s*(.+)\s*/;
         if (regExp.test(firstLine)) {
@@ -120,34 +119,37 @@ $(function() {
   }
 
 
-  $('#sidebar-tree').jstree({
-                              core: {
-                                multiple: false,
-                                data: function(node, callback) {
-                                  var path = node.id === '#' ? '' : node.id;
-                                  var files = [];
-                                  $.each(fs.readdirSync(repositoryLocation + path), function(index, file) {
-                                    if (file != packageInfoFileName) {
-                                      var details = getEntryDetails(path + '/' + file);
-                                      files.push({
-                                                   id: details.path,
-                                                   text: details.name,
-                                                   icon: details.icon,
-                                                   children: details.directory,
-                                                   details: details
-                                                 });
-                                    }
-                                  });
-                                  callback(files);
-                                }
-                              }
-                            })
-    .on('changed.jstree', function(e, data) {
+  $('#sidebar-tree').jstree(
+    {
+      core: {
+        multiple: false,
+        data: function(node, callback) {
+          var path = node.id === '#' ? '' : node.id;
+          var files = [];
+          $.each(fs.readdirSync(repositoryLocation + path), function(index, file) {
+            if (file != packageInfoFileName) {
+              var details = getEntryDetails(path + '/' + file);
+              files.push({
+                           id: details.path,
+                           text: details.name,
+                           icon: details.icon,
+                           children: details.directory,
+                           details: details
+                         });
+            }
+          });
+          callback(files);
+        }
+      }
+    })
+    .on('changed.jstree',
+        function(e, data) {
           if (data && data.node) {
             $(document.body).trigger('modeller.entry.open', {details: data.node.original.details});
           }
 
-        }).on('open_node.jstree close_node.jstree', function(e, data) {
+        }).on('open_node.jstree close_node.jstree',
+              function(e, data) {
                 if (data && data.node) {
                   var details = data.node.original.details;
                   if (details.directory) {
