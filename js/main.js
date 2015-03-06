@@ -27,13 +27,34 @@ $(function() {
       fileData = '[package] ' + details.name + '\n A package ' + details.name;
     }
 
-    var split = split = String(fileData).split('\n');
-    content = split.slice(1).join('<br />');
+    var lines = split = String(fileData).split('\n');
+    content = lines.slice(1).join('\n');
 
-    panelBody.html($('<div class="container-fluid" contenteditable="true"></div>').html(content));
+    panelBody.html('');
+    
+    if(details.type == 'diagram'){
+      var startSvgPos = content.indexOf("<svg ");
+      var endSvgPos = content.indexOf("</svg>") + 6;
+      var svg = content.substring( startSvgPos , endSvgPos); 
+      content = content.substring(0 , startSvgPos);
+      panelBody.append($('<div class="container-fluid" contenteditable="true"></div>').html(content));
+      panelBody.append($('<div class="container-fluid diagram"></div>'));
+      panelBody.find('.diagram').get(0).innerHTML = svg;
+
+    }else{
+      panelBody.append($('<div class="container-fluid" contenteditable="true"></div>').html(content));
+    }
+    
+
+    
     CKEDITOR.inline(panel.find('[contenteditable=true]').get(0))
       .on('change', function(evt) {
-            $(document.body).trigger('modeller.entry.save', {details: details, content: evt.editor.getData()});
+                var content = evt.editor.getData();
+                if(details.type == 'diagram'){
+                  content += panelBody.find('.diagram').get(0).innerHTML;
+                }
+                $(document.body).trigger('modeller.entry.save', {details: details, content: content});
+                    
           });
 
   });
